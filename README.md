@@ -1,2 +1,3 @@
-# Code
-Various bits of code I have written/use
+# Daniel Peterson Code Repository
+Python/Perl/R/BASH scripts and functions.
+Use any code freely as you wish.

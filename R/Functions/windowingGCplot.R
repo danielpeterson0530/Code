@@ -1,8 +1,4 @@
-##################################################################################
-# Various Functions to use in R code.                                            #
-##################################################################################
-
-#R Function to create a simple plot for GC content with sliding window size
+#R function to create plot for GC content with sliding window
 plotwindowingGC <- function(windowsize, inputseq)
 {
   gcwindow <- seq(1, length(inputseq)-windowsize, by = windowsize) 

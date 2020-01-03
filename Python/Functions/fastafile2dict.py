@@ -1,3 +1,4 @@
+#Python function to make dictionary from fasta file
 def fastafile2dict(filename):
    fasta_dict = {}
    strings = open(filename).read().strip().split('>')

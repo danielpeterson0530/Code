@@ -1,5 +1,5 @@
 #Perl subroutine to return the reverse complement of dna
-sub reverseComplementDNA {;
+sub reverseComplementDNA {
    my $seq = shift @_;
    my $rc_seq = reverse $seq;
    $rc_seq =~ tr/ATGCatgc/TACGtacg/;

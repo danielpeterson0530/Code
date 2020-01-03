@@ -1,0 +1,7 @@
+#Perl subroutine to return the nucleotide counts for acgt for a DNA sequence string
+sub reverseComplementDNA {;
+   my $seq = shift @_;
+   my $rc_seq = reverse $seq;
+   $rc_seq =~ tr/ATGCatgc/TACGtacg/;
+   return $rc_seq
+}

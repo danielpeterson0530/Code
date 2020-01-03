@@ -1,4 +1,5 @@
-sub fastafile2hash(@filename) {
+#perl subroutine to make hash from fasta filename
+sub fastafile2hash {
    my %fasta_hash = ();
    my $header = '';
 

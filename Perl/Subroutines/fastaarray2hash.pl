@@ -1,5 +1,5 @@
 #Perl Subroutine to create hash from fasta array
-sub fastaarray2hash(@fasta) {
+sub fastaarray2hash {
    my %fasta_hash = ();
    my $header = '';
 

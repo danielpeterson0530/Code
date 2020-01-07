@@ -1,6 +1,6 @@
-## Python Function that checks filename for equal to or greater than number of columns supplied and exits with error message if not true (requires csv)
+## Python Function that checks filename for equal to or greater than number of columns supplied and exits with error message if not true (requires sys,csv)
 def format_check(filename, num_cols):
-### Requires csv package
+### Requires sys,csv package
    with open(filename) as f:
       reader = csv.reader(f, delimiter='\t', skipinitialspace=True)
       first_row = next(reader)

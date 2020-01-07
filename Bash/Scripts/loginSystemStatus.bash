@@ -1,58 +1,28 @@
 #!/bin/bash
-### Bash script to check system configurations and usage on login
-### (Add to bash.rc to auto run on login)
+### .bashrc script to see system configuration/usage on login
 
-#loading text
-echo "Starting system_check script..."
 clear
+IFS=' ' read s n r m p o <<< $(uname -snrmpo)
+echo "Hello $(whoami)!"
 echo
-
-# VARIABLE ASSIGNMENT
-# Show hostname:
-HOST=$(hostname)
-# User executing the script:
-CURRENTUSER=$(whoami)
-# Current date:
-CURRENTDATE=$(date)
-# Host IP address:
-IPADDRESS=$(hostname -I | cut -d ' ' -f1)
-# System information
-SYSINFOk=$(uname -s) #kernal name
-SYSINFOn=$(uname -n) #node name
-SYSINFOr=$(uname -r) #kernal release
-SYSINFOv=$(uname -v) #kernal version
-SYSINFOm=$(uname -m) #machine name
-SYSINFOp=$(uname -p) #processor type
-SYSINFOo=$(uname -o) #operation system
-# Disk usage info
-DISKUSAGE=$(df -h)
-# Who is logged in and uptime
-WHO=$(w)
-# Highest usage processes
-PROS_HEADER=$(ps aux | head -n 1)
-PROS=$(ps aux | sort -nrk 3,3 | head -n 5)
-
-# SHOW MESSAGES
-echo "Hello $CURRENTUSER!"
-echo
-echo "Today is: $CURRENTDATE"
-echo "Hostname: $HOST     IP:($IPADDRESS)"
+echo "Today is: $(date)"
+echo -e "Hostname: $(hostname)\tIP:($(hostname -I | cut -d ' ' -f1))"
 echo
 echo "System information:"
-echo -e "Kernal name:\t$SYSINFOk"
-echo -e "Node name:\t$SYSINFOn"
-echo -e "Kernel Release:\t$SYSINFOr"
-echo -e "Kernel Version:\t$SYSINFOv"
-echo -e "Machine Name:\t$SYSINFOm"
-echo -e "Processor type:\t$SYSINFOp"
-echo -e "Operating System:\t$SYSINFOo"
+echo -e "Kernal name:\t$s"
+echo -e "Node name:\t$n"
+echo -e "Kernel Release:\t$r"
+echo -e "Kernel Version:\t$(uname -v)"
+echo -e "Machine Name:\t$m"
+echo -e "Processor type:\t$p"
+echo -e "Operating System:\t$o"
 echo
 echo "Disk Usage:"
-echo "$DISKUSAGE"
+echo "$(df -h)"
 echo
 echo "Top Processes:"
-echo "$PROS_HEADER"
-echo "$PROS"
+echo "$(ps aux | head -n 1)"
+echo "$(ps aux | sort -nrk 3,3 | head -n 5)"
 echo
 echo "Currently logged in users:"
-echo "$WHO" | tail -n -1
+echo "$(w | tail -n -1)"

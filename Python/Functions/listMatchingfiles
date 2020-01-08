@@ -1,0 +1,6 @@
+# Python Function to return matching id in list of files (requires re package)
+def listMatchingfiles(file_list, id):
+# requires re package
+   r = re.compile(".*" + id + ".*")
+   matches = list(filter(r.match, file_list))
+   return matches

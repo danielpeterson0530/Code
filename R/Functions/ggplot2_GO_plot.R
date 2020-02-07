@@ -1,6 +1,7 @@
 #R script to generate a GO enrichment horizontal bar chart with pval labels
-#library(ggplot2)
-#library(extrafont)
+library(ggplot2)
+library(extrafont)
+library(forcats)
 #font_import()
 #loadfonts(device = "win")
 

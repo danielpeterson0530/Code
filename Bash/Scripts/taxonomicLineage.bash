@@ -3,7 +3,7 @@
 ##################################################################################
 # Bash script that will collect full taxonomic lineage information from EBI/EMBL #
 # when given a list of scientific names and return in csv format to STDOUT.      #
-##################################################################################
+################################################################################## 
 
 # NOTE: requires list of scientific names in file named 'list.of.names.txt'
 ## Names should be seperated by a single space, and each on their own line

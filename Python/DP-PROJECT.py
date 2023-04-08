@@ -1,17 +1,34 @@
-import os
+mport os
 import sys
 import subprocess
-import datetime
+from datetime import datetime
 
 def main():
-    #run_nmcli()
-    #run_ping("8.8.8.8")
-    #run_ping("www.yahoo.com")
-    #run_traceroute("www.yahoo.com")
-    #run_nslookup("www.yahoo.com")
-    #run_resolvectl()
-    outputinfo, outputfilename = get_prompt_response()
-
+    output = run_modules()
+    outputinfo, outputfilename, outputfile_fullpath = process_save_outputfile(output)
+    print(output)
+    
+def run_modules(): 
+    def run_module(cmdstr):
+        cmd = create_command(cmdstr)
+        rawoutput = run_subprocess(cmd)
+        out = rawoutput.stdout.decode("utf-8")
+        output = "COMMAND: \'" + cmdstr + "\'" + "\n" + "-"*20 + "START"+ "-"*20 + "\n" + out
+        return output
+    cmds = ["nmcli device show", 
+            "ping -c4 8.8.8.8",
+            "ping -c4 www.yahoo.com",
+            "traceroute -n www.yahoo.com",
+            "nslookup www.yahoo.com",
+            "resolvectl"]
+    header = "\n".join(("\nDate:\n  "+get_date(), "\nCommands run:", *["  "+c for c in cmds], "\nCommand Outputs:\n\n")) 
+    all_output = header
+    for cmd in cmds:
+        print("Running: " + cmd)
+        output = run_module(cmd)
+        all_output = "\n".join((all_output, output + "-"*21 + "END"+ "-"*21, "\n\n"))
+    return all_output
+    
 def create_command(cmdstr):
     return cmdstr.split(" ")
 
@@ -23,82 +40,84 @@ def run_subprocess(cmd):
         sys.exit("\n".join(("Process returned a non-zero exit status:",err,out)))
     else:
         return output
-    
-def run_ping(location):
-    cmd = create_command("ping -c4 " + str(location))
-    rawoutput = run_subprocess(cmd)
-    write_output(rawoutput)
-    return
 
-def run_nmcli():
-    cmd = create_command("nmcli device show")
-    rawoutput = run_subprocess(cmd)
-    write_output(rawoutput)
-    return
-    
-def run_traceroute(location):
-    cmd = create_command("traceroute -n " + str(location))
-    rawoutput = run_subprocess(cmd)
-    write_output(rawoutput)
-    return
-
-def run_nslookup(location):
-    cmd = create_command("nslookup " + str(location))
-    rawoutput = run_subprocess(cmd)
-    write_output(rawoutput)
-    return
-
-def run_resolvectl():
-    cmd = create_command("resolvectl")
-    rawoutput = run_subprocess(cmd)
-    write_output(rawoutput)
-    return
-
-def apn_prompt():
-    return input("Please enter the APN name:\n")
-
-def device_prompt():
-    return input("Please enter the Test Device Number:\n")
-
-def get_prompt_response():
+def prompt_confirm(prompt_str):
     while True:
-        apnresponse = apn_prompt()
-        response = str(input("You've entered: (" + apnresponse + ") is this correct? (y/n)\n"))
-        if response in ('y', 'Y', 'yes', 'YES', 'Yes'):
-            break
+        response = input(prompt_str)
+        res = str(input("You've entered: (" + response + ") is this correct? (y/n)\n"))
+        if res in ('y', 'Y', 'yes', 'YES', 'Yes'):
+            return response
+        elif res in ('n', 'N', 'no', 'NO', 'No'): 
+            continue
+        else:
+            print("Incorrect response. Please try again.")
+
+def prompt_outputfilename(output):
     while True:
-        devresponse = device_prompt()
-        response = str(input("You've entered: (" + devresponse + ") is this correct? (y/n)\n"))
-        if response in ('y', 'Y', 'yes', 'YES', 'Yes'):
-            break
-    return apnresponse, devresponse
+        res = input("\nDo you want to save output to file? (y/n)\n")
+        if res in ('y', 'Y', 'yes', 'YES', 'Yes'):
+            apnresponse = prompt_confirm("Please enter the APN name:\n")
+            devresponse = prompt_confirm("Please enter the Test Device Number:\n")
+            return apnresponse, devresponse
+        elif res in ('n', 'N', 'no', 'NO', 'No'): 
+            program_exit(output)
+        else:
+            print("Incorrect response. Please try again.")
 
-def prompt_output_filename():
-    apnname, devicenumber = get_prompt_response()
-    outputinfo = "".join(("APN_",apnname,"_Device_",devicenumber))
-    outputfilename = "".join((outputinfo, "_Test_Results.mcs",))
-    return outputinfo, outputfilename
+def process_save_outputfile(output):
+    apnname, devicenumber = prompt_outputfilename(output)
+    outdir = check_and_make_outdirs(devicenumber)
+    currentdate = get_date()
+    outputinfo = "".join((currentdate,"_APN",apnname,"_Device",devicenumber))
+    outputfilename = "".join((outputinfo, "_TestResults.mcs",))
+    outputfile_fullpath = "".join((outdir, outputfilename))
+    if exists(outputfile_fullpath):
+        res = input("".join(("File: (", outputfile_fullpath, ") already exists. Overwrite? (y/n)")))
+        while True:
+            if res in ('y', 'Y', 'yes', 'YES', 'Yes'):
+                write_file(outputfile_fullpath, output)
+                print("Output written to: " + outputfile_fullpath)
+                break
+            elif res in ('n', 'N', 'no', 'NO', 'No'): 
+                program_exit(output)
+            else:
+                print("Incorrect response. Please try again.")
+    else:
+        write_file(outputfile_fullpath, output)
+        print("Output written to: " + outputfile_fullpath)
+    return outputinfo, outputfilename, outputfile_fullpath
 
-def get_datetime():
-    return datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+def get_user_home():
+    return os.path.expanduser('~')
+
+def check_and_make_outdirs(devicenumber):
+    userhomedir = get_user_home()
+    dir1 = "".join((userhomedir, "/test", devicenumber))
+    dir2 = "".join((dir1, "/documents"))
+    dir3 = "".join((dir2, "/test", devicenumber, "_customer-captures/"))
+    for directory in [dir1, dir2, dir3]:
+        if not exists(directory):
+            os.makedirs(directory)
+    return dir3
+
+def get_date():
+    return datetime.today().strftime("%Y-%m-%d")
 
 def get_full_path(file):
     return os.path.abspath(file)
 
-def check_file_exists(file):
-    return os.path.exists(file)
+def exists(item):
+    return os.path.exists(item)
 
-def save_file():
-    get_full_path(file)
-    check_file_exists(file)
-    return
+def write_file(file, content):
+    with open(file, "w") as f:
+        f.write(content)
+    f.close()
 
-def sendmail_mailutils(outputinfo, outputfilename):
-    outputfile_fullpath = get_full_path(outputfilename)
-    dateandtime = get_datetime()
-    subject = " ".join((outputinfo, dateandtime))
-    message = "\n".join((outputfilename, outputinfo, dateandtime))
-    email_address = "danielpeterson0530@gmail.com" #"dp7285@att.com"
-    cmd = create_command(" ".join(("echo", message, "| mail -s", subject, email_address, "-A", outputfile_fullpath)))
-    rawoutput = run_subprocess(cmd)
-    return
+def program_exit(output):
+    print("File not written. Program complete.")
+    print("Printing output: \n\n")
+    print(output)
+    quit()
+
+main()

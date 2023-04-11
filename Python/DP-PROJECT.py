@@ -79,7 +79,7 @@ def process_save_outputfile(output, devicenumber):
     def check_overwrite(outputfile_fullpath):
         if exists(outputfile_fullpath):
             res = prompt_only("".join(("File: (", outputfile_fullpath, ") already exists. Overwrite? (Type [ANY KEY] for Yes, 'n' for No)")))
-            if res in ('n', 'N', 'no', 'NO', 'No'):
+            if not res:
                 program_exit("File not written. ")
             else:
                 return

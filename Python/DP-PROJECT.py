@@ -15,7 +15,7 @@ def run_modules():
     def run_subprocess(cmd):
         output = subprocess.run(cmd, capture_output=True)
         if output.returncode != 0:
-            erroutput = "\n".join(("Process returned a non-zero exit status:",output.stderr))
+            erroutput = "\n".join(("Process returned a non-zero exit status:",output.stdout.decode("utf-8"),output.stderr.decode("utf-8")))
             return erroutput
         else:
             return output.stdout.decode("utf-8")
@@ -28,7 +28,7 @@ def run_modules():
         print(processed_output)
         return processed_output
     def prompt_ping():
-        response = prompt_only("Run an additional ping? (Type [ADDRESS] for Yes, 'n' for No)\n")
+        response = prompt_only("Run additional ping? (Type [ADDRESS] for Yes, 'n' for No)\n")
         if response == False:
             return False, False
         else:
@@ -90,7 +90,7 @@ def process_save_outputfile(output, devicenumber):
         outputfilename = "".join((outputinfo, "_TestResults.mcs",))
         outputfile_fullpath = "".join((outdir, outputfilename))  
         return outputfile_fullpath
-    apnname = prompt_only("\nDo you want to save output to file? (Type APN (numbers-only) for Yes, 'n' for no)\n")
+    apnname = prompt_only("\nType APN to save output to file: (Type APN (numbers-only) for Yes, 'n' for no)\n")
     if apnname == False:
         program_exit("File not written. ")
     datacenter = prompt_only("\nEnter data-center code:\n")
@@ -98,7 +98,7 @@ def process_save_outputfile(output, devicenumber):
     outputfile_fullpath = process_outputfilename(apnname, devicenumber, datacenter)
     check_overwrite(outputfile_fullpath)
     write_file(outputfile_fullpath, output)
-    print("Output written to: " + outputfile_fullpath)
+    print("\n\nOutput written to: " + outputfile_fullpath)
     return
 
 def get_date():

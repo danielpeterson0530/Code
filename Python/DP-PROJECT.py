@@ -86,7 +86,7 @@ def process_save_outputfile(output, devicenumber):
     def process_outputfilename(apnname, devicenumber, datacenter):
         outdir = check_and_make_outdirs(devicenumber)
         currentdate = get_date()
-        outputinfo = "".join((currentdate,"_", datacenter, "_APN-",apnname,"_Device-",devicenumber))
+        outputinfo = "".join((currentdate,"_DC:", datacenter, "_APN:",apnname,"_Dev:",devicenumber))
         outputfilename = "".join((outputinfo, "_TestResults.mcs",))
         outputfile_fullpath = "".join((outdir, outputfilename))  
         return outputfile_fullpath
@@ -94,7 +94,8 @@ def process_save_outputfile(output, devicenumber):
     if apnname == False:
         program_exit("File not written. ")
     datacenter = prompt_only("\nEnter data-center code:\n")
-    output = "Data center:\n  " + datacenter + "\n" + output
+    output = "Device number:\n  " + devicenumber + "\n" + output
+    output = "Data center:\n  " + datacenter + "\n\n" + output
     outputfile_fullpath = process_outputfilename(apnname, devicenumber, datacenter)
     check_overwrite(outputfile_fullpath)
     write_file(outputfile_fullpath, output)
@@ -102,7 +103,7 @@ def process_save_outputfile(output, devicenumber):
     return
 
 def get_date():
-    return datetime.today().strftime("%Y-%m-%d")
+    return datetime.today().strftime("%Y%m%d")
 
 def prompt_only(prompt_str):
     response = input(prompt_str)
@@ -115,3 +116,5 @@ def prompt_only(prompt_str):
 def program_exit(exit_string = ""):
     print(exit_string + "Program complete.")
     quit()
+    
+main()
